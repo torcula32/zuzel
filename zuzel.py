@@ -1,65 +1,70 @@
 import sys
+import time
 import pygame
 from pygame.locals import *
+from classes.Game import Game
 from classes.Player import Player
+from classes.Text import Text
+from classes.Footer import Footer
 
 FPS = 30
 WINDOW_SIZE = (1200, 800)
-BACKGROUND_COLOR = (0, 0, 255)
-coordinate = False
-start = False
 
 pygame.init()
-pygame.font.init()
 fpsClock = pygame.time.Clock()
 
 screen = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption("Zuzel by Tommy")
 
-# font = pygame.font.Font("Arial", 20)
-font = pygame.font.SysFont("Arial", 20)
-player1 = Player("Player1", 1)
-player2 = Player("Player2", 2)
-player3 = Player("Player3", 3)
-player4 = Player("Player4", 4)
+players = [Player(f"Player{x}", x) for x in range(1, 5)]
 
-
-truck = pygame.Surface((WINDOW_SIZE[0]-100, WINDOW_SIZE[1]-100))
-truck.fill(BACKGROUND_COLOR)
-truck_rect = truck.get_rect(x=50 ,y=50)
-# pygame.draw.ellipse(truck, (0, 0, 0), truck_rect)
-pygame.draw.rect(truck, (0, 0, 0), (0, 0, 1100, 700), 200, border_radius=350)
-pygame.draw.line(truck, (255, 255, 255), (550, 500), (550, 700), width=3)
-pygame.draw.line(truck, (255, 255, 255), (550, 550), (540, 550), width=3)
-pygame.draw.line(truck, (255, 255, 255), (550, 600), (540, 600), width=3)
-pygame.draw.line(truck, (255, 255, 255), (550, 650), (540, 650), width=3)
-
-screen.fill(BACKGROUND_COLOR)
-screen.blit(truck, truck_rect)
+speedway = Game(screen)
+speedway.draw_board()
+footer = Footer(screen, "Arial", 20, players)
+center = Text(screen, "Comic Sans MS", 58)
 
 run = True
 
 while run:
-    screen.fill(BACKGROUND_COLOR)
-    screen.blit(truck, truck_rect)
     for event in pygame.event.get():
         if event.type == QUIT:
             run = False
         if event.type == KEYDOWN:
             if event.key == K_BACKQUOTE:
-                coordinate = not coordinate
+                footer.mouse_xy_hidden = not footer.mouse_xy_hidden
+            if speedway.wait_to_start:
+                speedway.wait_to_start = False
+                speedway.countdown = True
+                speedway.start_countdown_time = time.time()
+            if speedway.countdown:
+                if event.key == K_LCTRL or event.key == K_LALT or event.key == K_RALT or event.key == K_RSHIFT:
+                    speedway.false_start = True
+                    speedway.countdown = False
     x, y = pygame.mouse.get_pos()
-    label = f"x: {x}, y: {y}"
-    coordinate_label = font.render(label, True, (255, 255, 255))
-    coordinate_label_rect = coordinate_label.get_rect(x=100, y=770)
-    screen.fill(BACKGROUND_COLOR)
-    screen.blit(truck, truck_rect)
-    player1.draw_player(screen)
-    player2.draw_player(screen)
-    player3.draw_player(screen)
-    player4.draw_player(screen)
-    if coordinate:
-        screen.blit(coordinate_label, coordinate_label_rect)
+    footer.update(x, y)
+    speedway.draw_board()
+    for player in players:
+        player.draw_player(screen)
+    if speedway.wait_to_start:
+        center.set_text("Press any key to start...")
+    if speedway.false_start:
+        center.set_text("False start !!!")
+        center.set_color((255, 0, 0))
+    if speedway.countdown:
+        if time.time() - speedway.start_countdown_time <= 1:
+            count_label = "4"
+        elif time.time() - speedway.start_countdown_time <= 2:
+            count_label = "3"
+        elif time.time() - speedway.start_countdown_time <= 3:
+            count_label = "2"
+        elif time.time() - speedway.start_countdown_time <= 4:
+            count_label = "1"
+        elif time.time() - speedway.start_countdown_time > 4:
+            count_label = "Go"
+            speedway.start = True
+        center.set_text(count_label)
+    center.draw_centered()
+    footer.draw()
     pygame.display.update()
     fpsClock.tick(FPS)
 

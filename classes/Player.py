@@ -2,22 +2,20 @@ import pygame
 
 
 class Player(object):
+    pool_colors = [(255, 0, 0), (238, 238, 0), (0, 0, 255), (255, 255, 255)]
+    pool_y = [575, 625, 675, 725]
+
     def __init__(self, name, pool):
         self.name = name
         self.x = 600
-        if pool == 1:
-            self.y = 575
-            self.color = (255, 0, 0)
-        elif pool == 2:
-            self.y = 625
-            self.color = (238, 238, 0)
-        elif pool == 3:
-            self.y = 675
-            self.color = (0, 0, 255)
-        else:
-            self.y = 725
-            self.color = (255, 255, 255)
-        self.v = 1
+        self.pool = pool
+        self.y = self.pool_y[pool-1]
+        self.color = self.pool_colors[pool-1]
+        self.v = 0
+        self.laps = 0
 
     def draw_player(self, surface):
         pygame.draw.line(surface, self.color, (self.x-30, self.y), (self.x, self.y), width=3)
+
+    def update(self):
+        pass
