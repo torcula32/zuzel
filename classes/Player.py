@@ -1,19 +1,21 @@
 import pygame
 import math
 from pygame import Color
+from pygame.locals import *
 from classes.Game import Game
 
 
 class Player(object):
     pool_colors = [(255, 0, 0), (238, 238, 0), (0, 0, 255), (255, 255, 255)]
     pool_y = [575, 625, 675, 725]
+    keys = [K_LSHIFT, K_LALT, K_RALT, K_RSHIFT]
 
     def __init__(self, name, pool, surface):
         self.name = name
         self.x = 600
         self.pool = pool
-        self.y = self.pool_y[pool-1]
-        self.color = self.pool_colors[pool-1]
+        self.y = self.pool_y[self.pool-1]
+        self.color = self.pool_colors[self.pool-1]
         self.v = 1.0
         self.lap = 0
         self.player_points = self.init_points()
@@ -21,11 +23,14 @@ class Player(object):
         self.stop = False
         self.surface = surface
         self.alpha = 0
+        self.step_v = 0.3
+        self.step_a = 5
+        self.key = self.keys[self.pool-1]
+        self.player_points_max_lenght = 40
+        self.player_points_min_lenght = 10
 
     def init_points(self):
-        points = []
-        points.append((self.x - 30, self.y))
-        points.append((self.x, self.y))
+        points = [(self.x - 30, self.y), (self.x, self.y)]
         return points
 
     def draw_player(self):
@@ -36,11 +41,23 @@ class Player(object):
 
     def update(self):
         self.player_points.append((self.x, self.y))
+        if len(self.player_points) >= self.player_points_max_lenght:
+            self.player_points.pop(0)
 
     def move(self):
+        if pygame.key.get_pressed()[self.key]:
+            if self.alpha == 0:
+                self.alpha = 360
+            self.alpha -= self.step_a
+            self.v -= self.step_v
+            if len(self.player_points) <= self.player_points_min_lenght:
+                self.player_points.pop(0)
+        else:
+            self.v += self.step_v
         self.x = int(self.x + self.v * math.cos((self.alpha * math.pi)/180))
-        self.v += 1
         self.y = int(self.y + self.v * math.sin((self.alpha * math.pi)/180))
+        self.update()
+        # print(self.name, self.lap, self.x, self.y, self.v, self.alpha)
 
     def change_alpha(self):
         if self.alpha == 0:
@@ -50,3 +67,16 @@ class Player(object):
     def check_collision(self):
         if self.surface.get_at((self.x, self.y)) == Color(Game.BACKGROUND_COLOR):
             self.stop = True
+        if self.surface.get_at((self.x, self.y)) == Color(180, 180, 180):
+            self.lap += 1
+#TODO: add check laps end
+    def player_restore(self):
+        self.x = 600
+        self.y = self.pool_y[self.pool-1]
+        self.v = 1.0
+        self.lap = 0
+        self.player_points = self.init_points()
+        self.false_start = False
+        self.stop = False
+        self.alpha = 0
+

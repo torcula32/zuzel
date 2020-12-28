@@ -1,4 +1,6 @@
+import pygame
 from classes.Text import Text
+
 
 class Footer(Text):
     def __init__(self, screen, font_name, font_size, players, color=(255, 255, 255)):
@@ -8,9 +10,8 @@ class Footer(Text):
         self.mouse_xy_hidden = True
         self.players = players
 
-    def update(self, x, y):
-        self.mouse_x = x
-        self.mouse_y = y
+    def update(self):
+        self.mouse_x, self.mouse_y = pygame.mouse.get_pos()
 
     def draw(self):
         label_xy = f"x: {self.mouse_x}    y: {self.mouse_y}"

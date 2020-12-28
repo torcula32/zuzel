@@ -40,13 +40,13 @@ while run:
                 speedway.false_start = False
                 speedway.wait_to_start = True
             if speedway.countdown:
-                if (event.key == K_LCTRL and players[0].false_start == False)\
-                        or (event.key == K_LALT and players[1].false_start == False)\
-                        or (event.key == K_RALT and players[2].false_start == False)\
-                        or (event.key == K_RSHIFT and players[3].false_start == False):
+                if (event.key == K_LSHIFT and not players[0].false_start)\
+                        or (event.key == K_LALT and not players[1].false_start)\
+                        or (event.key == K_RALT and not players[2].false_start)\
+                        or (event.key == K_RSHIFT and not players[3].false_start):
                     speedway.false_start = True
                     speedway.countdown = False
-                    if event.key == K_LCTRL:
+                    if event.key == K_LSHIFT:
                         players[0].false_start = True
                     elif event.key == K_LALT:
                         players[1].false_start = True
@@ -54,25 +54,17 @@ while run:
                         players[2].false_start = True
                     else:
                         players[3].false_start = True
-            if speedway.start:                  #TODO: change to checking key status instead of key event
-                if event.key == K_LCTRL and players[0].false_start == False:
-                    players[0].change_alpha()
-                if event.key == K_LALT and players[1].false_start == False:
-                    players[1].change_alpha()
-                if event.key == K_RALT and players[2].false_start == False:
-                    players[2].change_alpha()
-                if event.key == K_RSHIFT and players[3].false_start == False:
-                    players[3].change_alpha()
+            if speedway.start:
+                if event.key == K_SPACE and players[0].stop and players[1].stop and players[2].stop and players[3].stop:
+                    speedway.restart_game()
     if speedway.start:
         for player in players:
             if not player.stop:
                 player.move()
-                player.update()
                 player.check_collision()
     if players[0].false_start and players[1].false_start and players[2].false_start and players[3].false_start:
         speedway.restart_game()
-    x, y = pygame.mouse.get_pos()
-    footer.update(x, y)
+    footer.update()
     speedway.draw_board()
     for player in players:
         if not player.false_start:
