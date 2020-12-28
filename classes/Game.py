@@ -4,7 +4,7 @@ import pygame
 class Game(object):
     BACKGROUND_COLOR = (0, 0, 255)
 
-    def __init__(self, screen):
+    def __init__(self, screen, players):
         # self.coordinate = True
         self.wait_to_start = True
         self.start = False
@@ -12,6 +12,7 @@ class Game(object):
         self.countdown = False
         self.start_countdown_time = 0
         self.screen = screen
+        self.players = players
 
     def restart_game(self):
         self.coordinate = True
@@ -20,6 +21,8 @@ class Game(object):
         self.false_start = False
         self.countdown = False
         self.start_countdown_time = 0
+        for player in self.players:
+            player.false_start = False
 
     def draw_board(self):
         self.screen.fill(self.BACKGROUND_COLOR)
