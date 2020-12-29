@@ -15,7 +15,7 @@ class Footer(Text):
 
     def draw(self):
         label_xy = f"x: {self.mouse_x}    y: {self.mouse_y}"
-        label_keys = f"{self.players[0].name}: Left CTRL,    {self.players[1].name}: Left ALT," \
+        label_keys = f"{self.players[0].name}: Left SHIFT,    {self.players[1].name}: Left ALT," \
                      f"    {self.players[2].name}: Right ALT,    {self.players[3].name}: Right SHIFT"
         if not self.mouse_xy_hidden:
             footer_label_xy = self.font.render(label_xy, True, self.color)
