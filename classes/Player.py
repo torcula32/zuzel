@@ -79,12 +79,12 @@ class Player(object):
             if not self.inside_end_area:
                 self.lap += 1
                 self.inside_end_area = True
-                if self.lap > 4:
+                if self.lap > 3:
                     self.stop = True
         else:
             if self.inside_end_area:
                 self.inside_end_area = False
-#TODO: add check laps end
+
     def player_restore(self):
         self.x = 600
         self.y = self.pool_y[self.pool-1]
