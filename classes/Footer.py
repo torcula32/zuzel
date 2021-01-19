@@ -22,5 +22,5 @@ class Footer(Text):
             footer_label_xy_rect = footer_label_xy.get_rect(x=10, y=770)
             self.screen.blit(footer_label_xy, footer_label_xy_rect)
         footer_label_keys = self.font.render(label_keys, True, self.color)
-        footer_label_keys_rect = footer_label_keys.get_rect(x=250, y=770)
+        footer_label_keys_rect = footer_label_keys.get_rect(x=350, y=770)
         self.screen.blit(footer_label_keys, footer_label_keys_rect)

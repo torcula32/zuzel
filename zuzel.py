@@ -4,8 +4,8 @@ import pygame
 from pygame.locals import *
 from classes.Game import Game
 from classes.Player import Player
-from classes.Text import Text
 from classes.Footer import Footer
+from classes.Board import Board
 
 FPS = 30
 WINDOW_SIZE = (1200, 800)
@@ -20,19 +20,20 @@ players = [Player(f"Player{x}", x, screen) for x in range(1, 5)]
 
 speedway = Game(screen, players)
 speedway.draw_board()
-footer = Footer(screen, "Arial", 20, players)
-center = Text(screen, "Comic Sans MS", 58)
+footer = Footer(screen, "Arial", 15, players)
+board = Board(screen, 400, 260, 400, 280, 5)
 
 run = True
 
 while run:
+    board.clear_board()
     for event in pygame.event.get():
         if event.type == QUIT:
             run = False
         if event.type == KEYDOWN:
             if event.key == K_BACKQUOTE:
                 footer.mouse_xy_hidden = not footer.mouse_xy_hidden
-            if speedway.wait_to_start:
+            if speedway.wait_to_start and event.key != K_BACKQUOTE:
                 speedway.wait_to_start = False
                 speedway.countdown = True
                 speedway.start_countdown_time = time.time()
@@ -70,11 +71,11 @@ while run:
         if not player.false_start:
             player.draw_player()
     if speedway.wait_to_start:
-        center.set_text("Press any key to start...")
-        center.set_color((255, 255, 255))
+        board.set_text_line("Press any key to start...", 3)
+        board.set_line_txt_color((255, 255, 255), 3)
     if speedway.false_start:
-        center.set_text("False start !!!")
-        center.set_color((255, 0, 0))
+        board.set_text_line("False start !!!", 3)
+        board.set_line_txt_color((255, 0, 0), 3)
     if speedway.countdown:
         count_label = ""
         if time.time() - speedway.start_countdown_time <= 1:
@@ -89,8 +90,8 @@ while run:
             count_label = "Go"
             speedway.start = True
             speedway.countdown = False
-        center.set_text(count_label)
-    center.draw_centered()
+        board.set_text_line(count_label, 3)
+    board.draw_board()
     footer.draw()
     pygame.display.update()
     fpsClock.tick(FPS)
